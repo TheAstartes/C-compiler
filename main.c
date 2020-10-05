@@ -147,6 +147,7 @@ typedef enum
 	ND_SUB, // -
 	ND_MUL, // *
 	ND_DIV, // /
+	ND_NEG, // - num
 	ND_NUM, // Integer
 } NodeKind;
 
@@ -165,6 +166,14 @@ static Node *new_node(NodeKind kind)
 {
 	Node *node = calloc(1, sizeof(Node));
 	node-> kind = kind;
+
+	return node;
+}
+
+static Node *new_node_neg(NodeKind kind, Node *expr)
+{
+	Node *node = new_node(kind);
+	node->lhs = expr;
 
 	return node;
 }
@@ -188,24 +197,25 @@ static Node *new_num(int val)
 static Node *expr(Token **rest, Token *tok);
 static Node *mul(Token **rest, Token *tok);
 static Node *primary(Token **rest, Token *tok);
+static Node *neg(Token **rest, Token *tok);
 
 // expr = mul ("+) mul | "-" mul)*
 
 static Node *expr(Token **rest, Token *tok)
 {
-	Node *node = mul(&tok, tok);
+	Node *node = neg(&tok, tok);
 
 	while(true)
 	{
 		if(equal(tok, "+"))
 		{
-			node = new_binary(ND_ADD, node, mul(&tok, tok->next));
+			node = new_binary(ND_ADD, node, neg(&tok, tok->next));
 			continue;
 		}
 
 		if(equal(tok, "-"))
 		{
-			node = new_binary(ND_SUB, node, mul(&tok, tok->next));
+			node = new_binary(ND_SUB, node, neg(&tok, tok->next));
 			continue;
 		}
 
@@ -215,7 +225,7 @@ static Node *expr(Token **rest, Token *tok)
 	}	
 }
 
-// mul = primary ("*" primary | "/" primary)*
+// mul = neg ("*" neg | "/" neg)*
 static Node *mul(Token **rest, Token *tok)
 {
   Node *node = primary(&tok, tok);
@@ -240,7 +250,21 @@ static Node *mul(Token **rest, Token *tok)
   }
 }
 
+static Node *neg(Token **rest, Token *tok)
+{
+	if(equal(tok, "+"))
+	{
+		return neg(rest, tok->next);
+	}
 
+	if(equal(tok, "-"))
+	{
+		return new_node_neg(ND_NEG, neg(rest, tok->next));
+
+	}
+
+	return primary(rest, tok);
+}
 
 // primary = "(" expr ")" | num
 
@@ -288,16 +312,21 @@ static void push(void)
 
 static void pop(char *arg)
 {
-	printf(" pop %s\n", arg);
+	printf("pop %s\n", arg);
 	depth--;
 }
 
 static void gen_expr(Node *node)
 {
-	if(node->kind == ND_NUM)
+	switch(node->kind)
 	{
-		printf(" mov $%d, %%rax\n", node->val);
-		return;
+		case ND_NUM:
+			printf("mov $%d, %%rax\n", node->val );
+			return;
+		case ND_NEG:
+			gen_expr(node->lhs);
+			printf("neg %%rax\n");
+			return;
 	}
 
 	gen_expr(node->rhs);
@@ -308,7 +337,7 @@ static void gen_expr(Node *node)
 	switch (node->kind)
 	{
 		case ND_ADD:
-			printf(" add %%rdi, %%rax\n");
+			printf("add %%rdi, %%rax\n");
 			return;
 		case ND_SUB:
 			printf(" sub %%rdi, %%rax\n");
