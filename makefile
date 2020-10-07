@@ -1,12 +1,11 @@
 CFLAGS=-std=c11 -g -fno-common
+SRCS=$(wildcard *.c)
+OBJS=$(SRCS:.c=.o)
 
-scc: main.o
-	$(CC) -o scc  main.o $(LDFLAGS)
+initiate: $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-test: scc
+$(OBJS): initiate.h
+
+test: initiate
 	./test.sh
-
-clean:
-	rm -f scc  *.o *~ tmp*
-
-.PHONY: test clean
