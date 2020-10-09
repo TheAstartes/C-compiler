@@ -2,10 +2,10 @@ CFLAGS=-std=c11 -g -fno-common
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-initiate: $(OBJS)
+compiler: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(OBJS): initiate.h
+$(OBJS): compiler.h
 
-test: initiate
+test: compiler
 	./test.sh
