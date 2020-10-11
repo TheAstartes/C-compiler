@@ -11,6 +11,7 @@ typedef enum
 	TK_RESERVED,	//Keyword / punctuator
 	TK_NUM,		//Numeric
 	TK_EOF,		//End of life marker
+	TK_IDEN,	//Identifier
 } TokenKind;
 
 //Token type
@@ -46,6 +47,8 @@ typedef enum
 	ND_LE,			// <=
 	ND_NUM, 		// Int
 	ND_EXPR_STMT,	//Expression stat
+	ND_ASSIGN,		//Assign  (a = 1 )
+	ND_VAR,			// Variable
 } NodeKind;
 
 typedef struct Node Node;
@@ -56,6 +59,7 @@ struct Node
 	Node *lhs; // Left-hand side
 	Node *rhs; // Right-hand side
 	int val;
+	char name;	//name for variable
 };
 
 Node *parse(Token *tok);

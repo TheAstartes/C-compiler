@@ -43,7 +43,7 @@ bool equal(Token *tok, char *op) {
 
 // Ensure that the current token is `op`.
 Token *skip(Token *tok, char *op) {
-  printf("char is : %s",op);
+  //printf("char is : %s",op);
   if (!equal(tok, op))
     error_tok(tok, "expected '%s'", op);
   return tok->next;
@@ -85,6 +85,14 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    if ( 'a' <= *p && *p <= 'z')
+    {
+      cur = cur->next =
+      new_token(TK_IDEN, p++, p);
+
+      continue;
+    }
+
     // Multi-letter punctuators
     if (startswith(p, "==") || startswith(p, "!=") ||
         startswith(p, "<=") || startswith(p, ">=")) {
@@ -102,7 +110,6 @@ Token *tokenize(char *p) {
 
     error_at(p, "invalid token");
   }
-
   cur = cur->next = new_token(TK_EOF, p, p);
   return head.next;
 }
