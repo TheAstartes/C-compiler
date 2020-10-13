@@ -111,7 +111,7 @@ void codeGeneration(Node *node)
 	printf("  .globl main\n");
   	printf("main:\n");
 
-  	printf(" push %%%rbp\n");
+  	printf(" push %%rbp\n");
   	printf(" mov %%rsp, %%rbp\n");
   	printf(" sub $208, %%rsp\n");
 
