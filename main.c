@@ -11,8 +11,8 @@ int main(int argc, char **argv)
 
 	current_input = argv[1];
 	Token *tok = tokenize(current_input);
-	Node *node = parse(tok);
-	codeGeneration(node);
+	Function *pr = parse(tok);
+	codeGeneration(pr);
 
 	return 0;
 }

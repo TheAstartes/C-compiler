@@ -58,6 +58,16 @@ static Token *new_token(TokenKind kind, char *start, char *end) {
   return tok;
 }
 
+static bool is_iden(char c)
+{
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
+}
+
+static bool is_iden2(char c)
+{
+  return is_iden(c) || ('0' <= c && c <= '9');
+}
+
 static bool startswith(char *p, char *q) {
   return strncmp(p, q, strlen(q)) == 0;
 }
@@ -85,10 +95,16 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if ( 'a' <= *p && *p <= 'z')
+    if(is_iden(*p))
     {
-      cur = cur->next =
-      new_token(TK_IDEN, p++, p);
+      char *start = p;
+
+      do
+      {
+        p++;
+      } while(is_iden2(*p));
+
+      cur = cur->next = new_token(TK_IDEN, start, p);
 
       continue;
     }

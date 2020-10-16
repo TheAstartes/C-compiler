@@ -10,6 +10,21 @@ static Node *add(Token **rest, Token *tok);
 static Node *expr_stmt(Token **rest, Token *tok);
 static Node *assign(Token **rest, Token *tok);
 
+Obj *objects;
+
+static Obj *find_var(Token *tok)
+{
+  for (Obj *var = objects; var; var = var->next)
+  {
+    if(strlen(var->name) == tok->len &&
+      !strncmp(tok->loc, var->name, tok->len))
+    {
+      return var;
+    }
+
+    return NULL;
+  }
+}
 
 static Node *new_node(NodeKind kind)
 {
@@ -38,6 +53,23 @@ static Node *new_num(int val)
   Node *node = new_node(ND_NUM);
   node->val = val;
   return node;
+}
+
+static Node *new_var_node(Obj *var)
+{
+  Node *node = new_node(ND_VAR);
+  node->var = var;
+  return node;
+}
+
+static Obj *new_lvar(char *name)
+{
+  Obj *var = calloc(1, sizeof(Obj));
+  var->name = name;
+  var->next = objects;
+
+  objects = var;
+  return var;
 }
 
 static Node *stmt(Token **rest, Token *tok)
@@ -183,6 +215,16 @@ static Node *primary(Token **rest, Token *tok)
     return node;
   }
 
+  if(tok->kind == TK_IDEN)
+  {
+    Obj *var = find_var(tok);
+    if(!var)
+    {
+      var = new_lvar(strndup(tok->loc, tok->len));
+    }
+    return new_var_node(var);
+  }
+
   if (tok->kind == TK_NUM)
   {
     Node *node = new_num(tok->val);
@@ -193,11 +235,17 @@ static Node *primary(Token **rest, Token *tok)
   error_tok(tok, "expected an expression");
 }
 
-Node *parse(Token *tok)
+Function *parse(Token *tok)
 {
   Node head = {};
   Node *cur = &head;
   while (tok->kind != TK_EOF)
     cur = cur->next = stmt(&tok, tok);
-  return head.next;
+  
+  Function *pr = calloc(1, sizeof(Function));
+
+  pr->body = head.next;
+  pr->objects = objects;
+
+  return pr;
 }

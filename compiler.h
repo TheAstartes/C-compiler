@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -34,6 +36,17 @@ bool equal(Token *tok, char *op);
 Token *skip(Token *tok, char *op);
 Token *tokenize(char *input);
 
+typedef struct Obj Obj;
+
+struct Obj
+{
+	Obj *next;
+	char *name;
+	int offset;
+};
+
+typedef struct Node Node;
+
 typedef enum
 {
 	ND_ADD,			// +
@@ -56,12 +69,22 @@ struct Node
 {
 	NodeKind kind;
 	Node *next;
-	Node *lhs; // Left-hand side
-	Node *rhs; // Right-hand side
-	int val;
-	char name;	//name for variable
+	Node *lhs; 	// Left-hand side
+	Node *rhs; 	// Right-hand side
+	int val;	//name for variable
+	Obj *var;	
 };
 
-Node *parse(Token *tok);
 
-void codeGeneration(Node *node);
+typedef struct Function Function;
+
+struct Function
+{
+	Node *body;
+	Obj *objects;
+	int stack_size;
+};
+
+Function *parse(Token *tok);
+
+void codeGeneration(Function *pr);
