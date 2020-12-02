@@ -59,9 +59,10 @@ typedef enum
 	ND_LT,			// <
 	ND_LE,			// <=
 	ND_NUM, 		// Int
-	ND_EXPR_STMT,	//Expression stat
+	ND_EXPR_STMT,		//Expression stat
 	ND_ASSIGN,		//Assign  (a = 1 )
-	ND_VAR,			// Variable
+	ND_VAR,		// Variable
+	ND_RETURN,		// Return keyword
 } NodeKind;
 
 typedef struct Node Node;

@@ -72,6 +72,17 @@ static bool startswith(char *p, char *q) {
   return strncmp(p, q, strlen(q)) == 0;
 }
 
+//Search all tokens for keyword
+static void convert_keyword(Token *tok){
+	for ( Token *token = tok; token->kind != TK_EOF; token = token->next)
+	{
+		if (equal(token, "return"))
+		{
+			token->kind = TK_RESERVED;
+		}
+	}
+}
+
 // Tokenize `current_input` and returns new tokens.
 Token *tokenize(char *p) {
   current_input = p;
@@ -127,5 +138,6 @@ Token *tokenize(char *p) {
     error_at(p, "invalid token");
   }
   cur = cur->next = new_token(TK_EOF, p, p);
+  convert_keyword(head.next);
   return head.next;
 }

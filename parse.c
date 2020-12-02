@@ -16,8 +16,7 @@ static Obj *find_var(Token *tok)
 {
   for (Obj *var = objects; var; var = var->next)
   {
-    if(strlen(var->name) == tok->len &&
-      !strncmp(tok->loc, var->name, tok->len))
+    if(strlen(var->name) == tok->len && !strncmp(tok->loc, var->name, tok->len))
     {
       return var;
     }
@@ -74,6 +73,12 @@ static Obj *new_lvar(char *name)
 
 static Node *stmt(Token **rest, Token *tok)
 {
+  if (equal(tok, "return"))
+  {
+  	Node *node = new_neg_node(ND_RETURN, expr(&tok, tok->next));
+  	*rest = skip(tok, ";");
+  	return node;
+  }
   return expr_stmt(rest, tok);
 }
 
@@ -85,9 +90,21 @@ static Node *expr_stmt(Token **rest, Token *tok)
   return node;
 }
 
+
 static Node *expr(Token **rest, Token *tok)
 {
-  return equals(rest, tok);
+  return assign(rest, tok);
+}
+
+static Node *assign(Token **rest, Token *tok)
+{
+	Node *node = equals(&tok, tok);
+	if(equal(tok, "="))
+	{
+		node = new_binary(ND_ASSIGN, node, assign(&tok, tok->next));
+	}
+	*rest = tok;
+	return node;
 }
 
 static Node *equals(Token **rest, Token *tok)
@@ -222,6 +239,7 @@ static Node *primary(Token **rest, Token *tok)
     {
       var = new_lvar(strndup(tok->loc, tok->len));
     }
+    *rest = tok->next;
     return new_var_node(var);
   }
 
