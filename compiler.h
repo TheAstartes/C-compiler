@@ -59,9 +59,10 @@ typedef enum
 	ND_LT,			// <
 	ND_LE,			// <=
 	ND_NUM, 		// Int
-	ND_EXPR_STMT,		//Expression stat
+	ND_EXPR_STMT,	//Expression stat
 	ND_ASSIGN,		//Assign  (a = 1 )
-	ND_VAR,		// Variable
+	ND_VAR,			// Variable
+	ND_BLOCK,		//Block of code
 	ND_RETURN,		// Return keyword
 } NodeKind;
 
@@ -72,6 +73,7 @@ struct Node
 	Node *next;
 	Node *lhs; 	// Left-hand side
 	Node *rhs; 	// Right-hand side
+	Node *body;	// Body inside brackets
 	int val;	//name for variable
 	Obj *var;	
 };

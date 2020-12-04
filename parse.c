@@ -9,6 +9,7 @@ static Node *relational(Token **rest, Token *tok);
 static Node *add(Token **rest, Token *tok);
 static Node *expr_stmt(Token **rest, Token *tok);
 static Node *assign(Token **rest, Token *tok);
+static Node *block_stmt(Token **rest, Token *tok);
 
 Obj *objects;
 
@@ -79,9 +80,32 @@ static Node *stmt(Token **rest, Token *tok)
   	*rest = skip(tok, ";");
   	return node;
   }
+
+  if(equal(tok, "{"))
+  {
+    return block_stmt(rest, tok);
+  }
+
   return expr_stmt(rest, tok);
 }
 
+
+static Node *block_stmt(Token **rest, Token *tok)
+{
+  Node head = {};
+  Node *cur = &head;
+
+  while(!equal(tok, "}"))
+  {
+    cur = cur->next = stmt(&tok, tok);
+
+    Node *node = new_node(ND_BLOCK);
+    node->body = head.next;
+    *rest = tok->next;
+
+    return node;
+  }
+}
 
 static Node *expr_stmt(Token **rest, Token *tok)
 {
@@ -255,14 +279,11 @@ static Node *primary(Token **rest, Token *tok)
 
 Function *parse(Token *tok)
 {
-  Node head = {};
-  Node *cur = &head;
-  while (tok->kind != TK_EOF)
-    cur = cur->next = stmt(&tok, tok);
+  tok = skip(tok, "{");
   
   Function *pr = calloc(1, sizeof(Function));
 
-  pr->body = head.next;
+  pr->body = block_stmt(&tok, tok);
   pr->objects = objects;
 
   return pr;

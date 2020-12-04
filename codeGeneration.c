@@ -102,6 +102,12 @@ static void gen_stmt(Node *node)
 {
 	switch( node-> kind)
 	{
+		case ND_BLOCK:
+			for (Node *n = node->body; n; n = n->next)
+			{
+				gen_stmt(n);
+			}
+			return;
 		case ND_RETURN:
 			gen_expr(node->lhs);
 			printf(" jmp .L.return\n");
@@ -137,11 +143,8 @@ void codeGeneration(Function *pr)
   	printf(" mov %%rsp, %%rbp\n");
   	printf(" sub $208, %%rsp\n");
 
-  	for(Node *n = pr->body; n; n = n->next)
-  	{
-  		gen_stmt(n);
-  		assert(depth == 0);
-  	}
+  	gen_stmt(pr->body);
+  	assert(depth == 0);
 	
 	printf(".L.return:\n");
   	printf(" mov %%rbp, %%rsp\n");
