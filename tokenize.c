@@ -72,11 +72,26 @@ static bool startswith(char *p, char *q) {
   return strncmp(p, q, strlen(q)) == 0;
 }
 
+static bool is_keyword(Token *tok)
+{
+  static char *keyword[] = {"return", "if", "else"};
+
+  for (int i = 0; i < sizeof(keyword) / sizeof(*keyword); i++)
+  {
+    if (equal(tok, keyword[i]))
+    {
+      return true;
+    }
+
+    return false;
+  }
+}
+
 //Search all tokens for keyword
 static void convert_keyword(Token *tok){
 	for ( Token *token = tok; token->kind != TK_EOF; token = token->next)
 	{
-		if (equal(token, "return"))
+		if (is_keyword(token))
 		{
 			token->kind = TK_RESERVED;
 		}

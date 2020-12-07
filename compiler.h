@@ -62,6 +62,7 @@ typedef enum
 	ND_EXPR_STMT,	//Expression stat
 	ND_ASSIGN,		//Assign  (a = 1 )
 	ND_VAR,			// Variable
+	ND_IF,			// If statements
 	ND_BLOCK,		//Block of code
 	ND_RETURN,		// Return keyword
 } NodeKind;
@@ -71,10 +72,13 @@ struct Node
 {
 	NodeKind kind;
 	Node *next;
-	Node *lhs; 	// Left-hand side
-	Node *rhs; 	// Right-hand side
-	Node *body;	// Body inside brackets
-	int val;	//name for variable
+	Node *lhs; 			// Left-hand side
+	Node *rhs; 			// Right-hand side
+	Node *body;			// Body inside brackets
+	Node *condition;	// Condition
+	Node *then;			// 
+	Node *els;			// else
+	int val;			//name for variable
 	Obj *var;	
 };
 

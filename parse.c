@@ -81,6 +81,26 @@ static Node *stmt(Token **rest, Token *tok)
   	return node;
   }
 
+  if(equal(tok, "if"))
+  {
+    Node *node = new_node(ND_IF);
+
+    tok = skip(tok->next, "(");
+    node->condition = expr(&tok, tok);
+    tok = skip(tok, ")");
+
+    node->then = stmt(&tok, tok);
+
+    if(equal(tok, "else"))
+    {
+      node->els = stmt(&tok, tok->next);
+    }
+
+    *rest = tok;
+
+    return node;
+  }
+
   if(equal(tok, "{"))
   {
     return block_stmt(rest, tok);
@@ -109,6 +129,14 @@ static Node *block_stmt(Token **rest, Token *tok)
 
 static Node *expr_stmt(Token **rest, Token *tok)
 {
+  if(equal(tok, ";"))
+  {
+    *rest = tok->next;
+
+    return new_node(ND_BLOCK);
+  }
+
+
   Node *node = new_neg_node(ND_EXPR_STMT, expr(&tok, tok));
   *rest = skip(tok, ";");
   return node;
