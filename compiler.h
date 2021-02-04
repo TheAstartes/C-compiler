@@ -65,6 +65,7 @@ typedef enum
 	ND_IF,			// If statements
 	ND_BLOCK,		//Block of code
 	ND_RETURN,		// Return keyword
+	ND_FOR,			// For statement
 } NodeKind;
 
 typedef struct Node Node;
@@ -79,7 +80,9 @@ struct Node
 	Node *then;			// 
 	Node *els;			// else
 	int val;			//name for variable
-	Obj *var;	
+	Obj *var;
+	Node *initiate;
+	Node *increment;
 };
 
 

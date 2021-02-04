@@ -129,6 +129,32 @@ static void gen_stmt(Node *node)
     		
     		return;
 		}
+
+		case ND_FOR:
+		{
+			int c = count();
+
+			gen_stmt(node->initiate);
+			printf(".L.begin.%d:\n",c);
+
+			if(node->condition)
+			{
+				gen_expr(node->condition);
+				printf(" cmp $0, %%rax\n");
+				printf(" je .L.end.$d\n", c);
+			}
+
+			gen_stmt(node->then);
+			if(node->increment)
+			{
+				gen_expr(node->increment);
+			}
+
+			printf("  jmp .L.begin.%d\n", c);
+			printf(" .L.end.$d:\n", c);
+			return;
+		}
+
 		case ND_BLOCK:
 			for (Node *n = node->body; n; n = n->next)
 			{

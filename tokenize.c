@@ -74,7 +74,7 @@ static bool startswith(char *p, char *q) {
 
 static bool is_keyword(Token *tok)
 {
-  static char *keyword[] = {"return", "if", "else"};
+  static char *keyword[] = {"return", "if", "else", "for"};
 
   for (int i = 0; i < sizeof(keyword) / sizeof(*keyword); i++)
   {

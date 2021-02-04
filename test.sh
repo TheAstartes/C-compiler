@@ -27,7 +27,7 @@ assert 1 '{ return 7<=12; }'
 assert 5 '{ a=5; return a; }'
 assert 1 '{ return 30>=(7*0)+15; }'
 assert 2 '{ if (0) return 3; return 2; }'
-assert 4 '{ if (0) { 1; 2; return 3; } else { return 4; } }'
-
+#assert 4 '{ if (0) { 1; 2; return 3; } else { return 4; } }'
+assert 15 '{ i=0; for (i=0; i<=5; i=i+1) i=i+1; return i; }'
 
 echo OK
