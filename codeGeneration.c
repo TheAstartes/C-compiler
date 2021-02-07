@@ -134,7 +134,11 @@ static void gen_stmt(Node *node)
 		{
 			int c = count();
 
-			gen_stmt(node->initiate);
+			if(node->initiate);
+			{
+				gen_stmt(node->initiate);
+			}
+			//gen_stmt(node->initiate);
 			printf(".L.begin.%d:\n",c);
 
 			if(node->condition)

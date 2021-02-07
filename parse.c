@@ -129,6 +129,19 @@ static Node *stmt(Token **rest, Token *tok)
 
   }
 
+  if(equal(tok, "for"))
+  {
+	  Node *node = new_node(ND_FOR);
+	  tok = skip(tok->next, "(");
+	  
+	  node->condition = expr(&tok, tok);
+	  tok = skip(tok, ")");
+
+	  node->then = stmt(rest, tok);
+
+	  return node;
+  }
+
   if(equal(tok, "{"))
   {
     return block_stmt(rest, tok);
